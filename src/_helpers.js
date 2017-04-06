@@ -4,6 +4,40 @@ const webkitPrefix = 'WebkitAppearance' in document.documentElement.style
   ? '-webkit-'
   : ''
 
+function on(elSelector, eventName, selector, handler, useCapture) {
+  const _useCapture = useCapture === undefined ? false : useCapture
+  let elements = null
+  if (typeof elSelector === 'string') {
+    elements = document.querySelectorAll(elSelector)
+  } else {
+    elements = [].concat(elSelector)
+  }
+  const addEventListener = function(element) {
+    element.addEventListener(eventName, function(e) {
+      for (let target = e.target; target && target !== this; target = target.parentNode) {
+        // loop parent nodes from the target to the delegation node
+        let match = false
+        if (target.matches) {
+          match = target.matches(selector)
+        } else if (target.webkitMatchesSelector) {
+          match = target.webkitMatchesSelector(selector)
+        } else if (target.mozMatchesSelector) {
+          match = target.mozMatchesSelector(selector)
+        } else if (target.msMatchesSelector) {
+          match = target.msMatchesSelector(selector)
+        } else if (target.oMatchesSelector) {
+          match = target.oMatchesSelector(selector)
+        }
+        if (match) {
+          handler.call(target, e)
+          break
+        }
+      }
+    }, _useCapture)
+  }
+  Array.prototype.forEach.call(elements, addEventListener)
+}
+
 const divide = (denominator) => {
   return (numerator) => {
     return numerator / denominator
@@ -51,5 +85,6 @@ export {
   loadImage,
   scrollTop,
   getWindowCenter,
-  toggleListeners
+  toggleListeners,
+  on
 }

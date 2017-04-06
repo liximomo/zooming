@@ -8,6 +8,40 @@ var body$1 = document.body;
 var docElm = document.documentElement;
 var webkitPrefix = 'WebkitAppearance' in document.documentElement.style ? '-webkit-' : '';
 
+function on(elSelector, eventName, selector, handler, useCapture) {
+  var _useCapture = useCapture === undefined ? false : useCapture;
+  var elements = null;
+  if (typeof elSelector === 'string') {
+    elements = document.querySelectorAll(elSelector);
+  } else {
+    elements = [].concat(elSelector);
+  }
+  var addEventListener = function addEventListener(element) {
+    element.addEventListener(eventName, function (e) {
+      for (var target = e.target; target && target !== this; target = target.parentNode) {
+        // loop parent nodes from the target to the delegation node
+        var match = false;
+        if (target.matches) {
+          match = target.matches(selector);
+        } else if (target.webkitMatchesSelector) {
+          match = target.webkitMatchesSelector(selector);
+        } else if (target.mozMatchesSelector) {
+          match = target.mozMatchesSelector(selector);
+        } else if (target.msMatchesSelector) {
+          match = target.msMatchesSelector(selector);
+        } else if (target.oMatchesSelector) {
+          match = target.oMatchesSelector(selector);
+        }
+        if (match) {
+          handler.call(target, e);
+          break;
+        }
+      }
+    }, _useCapture);
+  };
+  Array.prototype.forEach.call(elements, addEventListener);
+}
+
 var divide = function divide(denominator) {
   return function (numerator) {
     return numerator / denominator;
@@ -397,7 +431,7 @@ var eventHandler = {
     if (shown) {
       if (released) api.close();else api.release();
     } else {
-      api.open(e.currentTarget);
+      api.open(e.target);
     }
   },
 
@@ -493,7 +527,11 @@ var api = {
    * @param  {string|Element} el A css selector or an Element.
    * @return {api}
    */
-  listen: function listen(el) {
+  listen: function listen(el, delegated) {
+    if (delegated) {
+      on(el, 'click', delegated, eventHandler.click);
+    }
+
     if (typeof el === 'string') {
       var els = document.querySelectorAll(el),
           i = els.length;
@@ -571,12 +609,13 @@ var api = {
     // force layout update
     target.offsetWidth;
 
+    var originalStyle = window.getComputedStyle(target);
     style.target.open = {
-      position: 'relative',
+      position: originalStyle.position || 'relative',
       zIndex: 999,
       cursor: csutomOptions.enableGrab ? style.cursor.grab : style.cursor.zoomOut,
       transition: transformCssProp + '\n        ' + csutomOptions.transitionDuration + 's\n        ' + csutomOptions.transitionTimingFunction,
-      transform: 'translate(' + translate.x + 'px, ' + translate.y + 'px) scale(' + scale + ')'
+      transform: 'translate(' + translate.x + 'px, ' + translate.y + 'px) translateZ(0) scale(' + scale + ')'
     };
 
     // trigger transition
@@ -592,6 +631,8 @@ var api = {
     document.addEventListener('keydown', eventHandler.keydown);
 
     target.addEventListener(transEndEvent, function onEnd() {
+      target.classList.add('is-zoomed');
+
       target.removeEventListener(transEndEvent, onEnd);
 
       lock = false;
@@ -654,6 +695,7 @@ var api = {
     document.removeEventListener('keydown', eventHandler.keydown);
 
     target.addEventListener(transEndEvent, function onEnd() {
+      target.classList.remove('is-zoomed');
       target.removeEventListener(transEndEvent, onEnd);
 
       shown = false;

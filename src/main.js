@@ -1,6 +1,6 @@
 import style from './_style'
 import options from './_options'
-import { loadImage, scrollTop, getWindowCenter, toggleListeners } from './_helpers'
+import { loadImage, scrollTop, getWindowCenter, toggleListeners, on } from './_helpers'
 import { sniffTransition, checkTrans, calculateTranslate, calculateScale } from './_trans'
 import { processTouches } from './_touch'
 
@@ -40,7 +40,7 @@ const eventHandler = {
       if (released) api.close()
       else api.release()
     } else {
-      api.open(e.currentTarget)
+      api.open(e.target)
     }
   },
 
@@ -137,7 +137,11 @@ const api = {
    * @param  {string|Element} el A css selector or an Element.
    * @return {api}
    */
-  listen: (el) => {
+  listen: (el, delegated) => {
+    if (delegated) {
+      on(el, 'click', delegated, eventHandler.click)
+    }
+
     if (typeof el === 'string') {
       let els = document.querySelectorAll(el), i = els.length
 
@@ -214,14 +218,15 @@ const api = {
     // force layout update
     target.offsetWidth
 
+    const originalStyle = window.getComputedStyle(target)
     style.target.open = {
-      position: 'relative',
+      position: originalStyle.position || 'relative',
       zIndex: 999,
       cursor: csutomOptions.enableGrab ? style.cursor.grab : style.cursor.zoomOut,
       transition: `${transformCssProp}
         ${csutomOptions.transitionDuration}s
         ${csutomOptions.transitionTimingFunction}`,
-      transform: `translate(${translate.x}px, ${translate.y}px) scale(${scale})`
+      transform: `translate(${translate.x}px, ${translate.y}px) translateZ(0) scale(${scale})`
     }
 
     // trigger transition
@@ -235,6 +240,8 @@ const api = {
     document.addEventListener('keydown', eventHandler.keydown)
 
     target.addEventListener(transEndEvent, function onEnd () {
+      target.classList.add('is-zoomed')
+
       target.removeEventListener(transEndEvent, onEnd)
 
       lock = false
@@ -293,6 +300,7 @@ const api = {
     document.removeEventListener('keydown', eventHandler.keydown)
 
     target.addEventListener(transEndEvent, function onEnd () {
+      target.classList.remove('is-zoomed')
       target.removeEventListener(transEndEvent, onEnd)
 
       shown = false
