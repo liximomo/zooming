@@ -251,12 +251,13 @@ var style = {
 
 var sniffTransition = function sniffTransition(el) {
   var ret = {};
-  var trans = ['webkitTransition', 'transition', 'mozTransition'];
-  var tform = ['webkitTransform', 'transform', 'mozTransform'];
+  var trans = ['webkitTransition', 'mozTransition', 'msTransition', 'transition'];
+  var tform = ['webkitTransform', 'mozTransform', 'msTransform', 'transform'];
   var end = {
-    'transition': 'transitionend',
-    'mozTransition': 'transitionend',
-    'webkitTransition': 'webkitTransitionEnd'
+    WebkitTransition: 'webkitTransitionEnd',
+    MozTransition: 'transitionend',
+    OTransition: 'oTransitionEnd otransitionend',
+    transition: 'transitionend'
   };
 
   trans.some(function (prop) {
@@ -615,7 +616,7 @@ var api = {
       zIndex: 999,
       cursor: csutomOptions.enableGrab ? style.cursor.grab : style.cursor.zoomOut,
       transition: transformCssProp + '\n        ' + csutomOptions.transitionDuration + 's\n        ' + csutomOptions.transitionTimingFunction,
-      transform: 'translate(' + translate.x + 'px, ' + translate.y + 'px) translateZ(0) scale(' + scale + ')'
+      transform: 'translate(' + translate.x + 'px, ' + translate.y + 'px) scale(' + scale + ')'
     };
 
     // trigger transition
@@ -629,8 +630,7 @@ var api = {
 
     document.addEventListener('scroll', eventHandler.scroll);
     document.addEventListener('keydown', eventHandler.keydown);
-
-    target.addEventListener(transEndEvent, function onEnd() {
+    var onEnd = function onEnd() {
       target.classList.add('is-zoomed');
 
       target.removeEventListener(transEndEvent, onEnd);
@@ -662,7 +662,13 @@ var api = {
       }
 
       if (cb) cb(target);
-    });
+    };
+
+    if (transEndEvent) {
+      target.addEventListener(transEndEvent, onEnd);
+    } else {
+      onEnd();
+    }
 
     return _this;
   },
@@ -694,7 +700,7 @@ var api = {
     document.removeEventListener('scroll', eventHandler.scroll);
     document.removeEventListener('keydown', eventHandler.keydown);
 
-    target.addEventListener(transEndEvent, function onEnd() {
+    var onEnd = function onEnd() {
       target.classList.remove('is-zoomed');
       target.removeEventListener(transEndEvent, onEnd);
 
@@ -717,7 +723,13 @@ var api = {
       parent.removeChild(overlay);
 
       if (cb) cb(target);
-    });
+    };
+
+    if (transEndEvent) {
+      target.addEventListener(transEndEvent, onEnd);
+    } else {
+      onEnd();
+    }
 
     return _this;
   },

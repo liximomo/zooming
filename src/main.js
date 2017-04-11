@@ -226,7 +226,7 @@ const api = {
       transition: `${transformCssProp}
         ${csutomOptions.transitionDuration}s
         ${csutomOptions.transitionTimingFunction}`,
-      transform: `translate(${translate.x}px, ${translate.y}px) translateZ(0) scale(${scale})`
+      transform: `translate(${translate.x}px, ${translate.y}px) scale(${scale})`
     }
 
     // trigger transition
@@ -238,8 +238,7 @@ const api = {
 
     document.addEventListener('scroll', eventHandler.scroll)
     document.addEventListener('keydown', eventHandler.keydown)
-
-    target.addEventListener(transEndEvent, function onEnd () {
+    const onEnd = () => {
       target.classList.add('is-zoomed')
 
       target.removeEventListener(transEndEvent, onEnd)
@@ -269,7 +268,13 @@ const api = {
       }
 
       if (cb) cb(target)
-    })
+    }
+
+    if (transEndEvent) {
+      target.addEventListener(transEndEvent, onEnd)
+    } else {
+      onEnd()
+    }
 
     return this
   },
@@ -299,7 +304,7 @@ const api = {
     document.removeEventListener('scroll', eventHandler.scroll)
     document.removeEventListener('keydown', eventHandler.keydown)
 
-    target.addEventListener(transEndEvent, function onEnd () {
+    const onEnd = () => {
       target.classList.remove('is-zoomed')
       target.removeEventListener(transEndEvent, onEnd)
 
@@ -322,7 +327,13 @@ const api = {
       parent.removeChild(overlay)
 
       if (cb) cb(target)
-    })
+    }
+
+    if (transEndEvent) {
+      target.addEventListener(transEndEvent, onEnd)
+    } else {
+      onEnd()
+    }
 
     return this
   },
