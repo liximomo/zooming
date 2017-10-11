@@ -1,8 +1,265 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-  typeof define === 'function' && define.amd ? define(factory) :
-  (global.Zooming = factory());
+	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+	typeof define === 'function' && define.amd ? define(factory) :
+	(global.Zooming = factory());
 }(this, (function () { 'use strict';
+
+/* eslint-disable */
+/*
+ * classList.js: Cross-browser full element.classList implementation.
+ * 1.1.20170112
+ *
+ * By Eli Grey, http://eligrey.com
+ * License: Dedicated to the public domain.
+ *   See https://github.com/eligrey/classList.js/blob/master/LICENSE.md
+ */
+
+/*global self, document, DOMException */
+
+/*! @source http://purl.eligrey.com/github/classList.js/blob/master/classList.js */
+
+if ("document" in self) {
+
+	// Full polyfill for browsers with no classList support
+	// Including IE < Edge missing SVGElement.classList
+	if (!("classList" in document.createElement("_")) || document.createElementNS && !("classList" in document.createElementNS("http://www.w3.org/2000/svg", "g"))) {
+
+		(function (view) {
+
+			"use strict";
+
+			if (!('Element' in view)) return;
+
+			var classListProp = "classList",
+			    protoProp = "prototype",
+			    elemCtrProto = view.Element[protoProp],
+			    objCtr = Object,
+			    strTrim = String[protoProp].trim || function () {
+				return this.replace(/^\s+|\s+$/g, "");
+			},
+			    arrIndexOf = Array[protoProp].indexOf || function (item) {
+				var i = 0,
+				    len = this.length;
+				for (; i < len; i++) {
+					if (i in this && this[i] === item) {
+						return i;
+					}
+				}
+				return -1;
+			}
+			// Vendors: please allow content code to instantiate DOMExceptions
+			,
+			    DOMEx = function DOMEx(type, message) {
+				this.name = type;
+				this.code = DOMException[type];
+				this.message = message;
+			},
+			    checkTokenAndGetIndex = function checkTokenAndGetIndex(classList, token) {
+				if (token === "") {
+					throw new DOMEx("SYNTAX_ERR", "An invalid or illegal string was specified");
+				}
+				if (/\s/.test(token)) {
+					throw new DOMEx("INVALID_CHARACTER_ERR", "String contains an invalid character");
+				}
+				return arrIndexOf.call(classList, token);
+			},
+			    ClassList = function ClassList(elem) {
+				var trimmedClasses = strTrim.call(elem.getAttribute("class") || ""),
+				    classes = trimmedClasses ? trimmedClasses.split(/\s+/) : [],
+				    i = 0,
+				    len = classes.length;
+				for (; i < len; i++) {
+					this.push(classes[i]);
+				}
+				this._updateClassName = function () {
+					elem.setAttribute("class", this.toString());
+				};
+			},
+			    classListProto = ClassList[protoProp] = [],
+			    classListGetter = function classListGetter() {
+				return new ClassList(this);
+			};
+			// Most DOMException implementations don't allow calling DOMException's toString()
+			// on non-DOMExceptions. Error's toString() is sufficient here.
+			DOMEx[protoProp] = Error[protoProp];
+			classListProto.item = function (i) {
+				return this[i] || null;
+			};
+			classListProto.contains = function (token) {
+				token += "";
+				return checkTokenAndGetIndex(this, token) !== -1;
+			};
+			classListProto.add = function () {
+				var tokens = arguments,
+				    i = 0,
+				    l = tokens.length,
+				    token,
+				    updated = false;
+				do {
+					token = tokens[i] + "";
+					if (checkTokenAndGetIndex(this, token) === -1) {
+						this.push(token);
+						updated = true;
+					}
+				} while (++i < l);
+
+				if (updated) {
+					this._updateClassName();
+				}
+			};
+			classListProto.remove = function () {
+				var tokens = arguments,
+				    i = 0,
+				    l = tokens.length,
+				    token,
+				    updated = false,
+				    index;
+				do {
+					token = tokens[i] + "";
+					index = checkTokenAndGetIndex(this, token);
+					while (index !== -1) {
+						this.splice(index, 1);
+						updated = true;
+						index = checkTokenAndGetIndex(this, token);
+					}
+				} while (++i < l);
+
+				if (updated) {
+					this._updateClassName();
+				}
+			};
+			classListProto.toggle = function (token, force) {
+				token += "";
+
+				var result = this.contains(token),
+				    method = result ? force !== true && "remove" : force !== false && "add";
+
+				if (method) {
+					this[method](token);
+				}
+
+				if (force === true || force === false) {
+					return force;
+				} else {
+					return !result;
+				}
+			};
+			classListProto.toString = function () {
+				return this.join(" ");
+			};
+
+			if (objCtr.defineProperty) {
+				var classListPropDesc = {
+					get: classListGetter,
+					enumerable: true,
+					configurable: true
+				};
+				try {
+					objCtr.defineProperty(elemCtrProto, classListProp, classListPropDesc);
+				} catch (ex) {
+					// IE 8 doesn't support enumerable:true
+					// adding undefined to fight this issue https://github.com/eligrey/classList.js/issues/36
+					// modernie IE8-MSW7 machine has IE8 8.0.6001.18702 and is affected
+					if (ex.number === undefined || ex.number === -0x7FF5EC54) {
+						classListPropDesc.enumerable = false;
+						objCtr.defineProperty(elemCtrProto, classListProp, classListPropDesc);
+					}
+				}
+			} else if (objCtr[protoProp].__defineGetter__) {
+				elemCtrProto.__defineGetter__(classListProp, classListGetter);
+			}
+		})(self);
+	} else {
+		// There is full or partial native classList support, so just check if we need
+		// to normalize the add/remove and toggle APIs.
+
+		(function () {
+			"use strict";
+
+			var testElement = document.createElement("_");
+
+			testElement.classList.add("c1", "c2");
+
+			// Polyfill for IE 10/11 and Firefox <26, where classList.add and
+			// classList.remove exist but support only one argument at a time.
+			if (!testElement.classList.contains("c2")) {
+				var createMethod = function createMethod(method) {
+					var original = DOMTokenList.prototype[method];
+
+					DOMTokenList.prototype[method] = function (token) {
+						var i,
+						    len = arguments.length;
+
+						for (i = 0; i < len; i++) {
+							token = arguments[i];
+							original.call(this, token);
+						}
+					};
+				};
+				createMethod('add');
+				createMethod('remove');
+			}
+
+			testElement.classList.toggle("c3", false);
+
+			// Polyfill for IE 10 and Firefox <24, where classList.toggle does not
+			// support the second argument.
+			if (testElement.classList.contains("c3")) {
+				var _toggle = DOMTokenList.prototype.toggle;
+
+				DOMTokenList.prototype.toggle = function (token, force) {
+					if (1 in arguments && !this.contains(token) === !force) {
+						return force;
+					} else {
+						return _toggle.call(this, token);
+					}
+				};
+			}
+
+			testElement = null;
+		})();
+	}
+}
+
+/* eslint-disable no-unused-vars */
+var getOwnPropertySymbols = Object.getOwnPropertySymbols;
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+var propIsEnumerable = Object.prototype.propertyIsEnumerable;
+
+function toObject(val) {
+	if (val === null || val === undefined) {
+		throw new TypeError('Object.assign cannot be called with null or undefined');
+	}
+
+	return Object(val);
+}
+
+Object.assign = function (target, source) {
+	var from;
+	var to = toObject(target);
+	var symbols;
+
+	for (var s = 1; s < arguments.length; s++) {
+		from = Object(arguments[s]);
+
+		for (var key in from) {
+			if (hasOwnProperty.call(from, key)) {
+				to[key] = from[key];
+			}
+		}
+
+		if (getOwnPropertySymbols) {
+			symbols = getOwnPropertySymbols(from);
+			for (var i = 0; i < symbols.length; i++) {
+				if (propIsEnumerable.call(from, symbols[i])) {
+					to[symbols[i]] = from[symbols[i]];
+				}
+			}
+		}
+	}
+
+	return to;
+};
 
 var body$1 = document.body;
 var docElm = document.documentElement;
@@ -82,6 +339,46 @@ var toggleListeners = function toggleListeners(el, types, handler) {
       el.removeEventListener(t, handler[t]);
     }
   });
+};
+
+var detectIE = function detectIE() {
+  var ua = window.navigator.userAgent;
+
+  // Test values; Uncomment to check result …
+
+  // IE 10
+  // ua = 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0)';
+
+  // IE 11
+  // ua = 'Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko';
+
+  // Edge 12 (Spartan)
+  // ua = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36 Edge/12.0';
+
+  // Edge 13
+  // ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2486.0 Safari/537.36 Edge/13.10586';
+
+  var msie = ua.indexOf('MSIE ');
+  if (msie > 0) {
+    // IE 10 or older => return version number
+    return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
+  }
+
+  var trident = ua.indexOf('Trident/');
+  if (trident > 0) {
+    // IE 11 => return version number
+    var rv = ua.indexOf('rv:');
+    return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
+  }
+
+  var edge = ua.indexOf('Edge/');
+  if (edge > 0) {
+    // Edge (IE 12+) => return version number
+    return parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
+  }
+
+  // other browser
+  return false;
 };
 
 /**
@@ -251,12 +548,13 @@ var style = {
 
 var sniffTransition = function sniffTransition(el) {
   var ret = {};
-  var trans = ['webkitTransition', 'mozTransition', 'msTransition', 'transition'];
-  var tform = ['webkitTransform', 'mozTransform', 'msTransform', 'transform'];
+  var trans = ['webkitTransition', 'mozTransition', 'oTransition', 'msTransition', 'transition'];
+  var tform = ['webkitTransform', 'mozTransform', 'oTransform', 'msTransform', 'transform'];
   var end = {
-    WebkitTransition: 'webkitTransitionEnd',
-    MozTransition: 'transitionend',
-    OTransition: 'oTransitionEnd otransitionend',
+    webkitTransition: 'webkitTransitionEnd',
+    mozTransition: 'transitionend',
+    oTransition: 'oTransitionEnd otransitionend',
+    msTransition: 'msTransitionEnd',
     transition: 'transitionend'
   };
 
@@ -404,6 +702,8 @@ var body = document.body;
 var overlay = document.createElement('div');
 var target = void 0;
 var parent = void 0;
+
+var isIE = detectIE();
 
 // state
 var shown = false; // target is open
@@ -612,11 +912,11 @@ var api = {
 
     var originalStyle = window.getComputedStyle(target);
     style.target.open = {
-      position: originalStyle.position || 'relative',
+      position: originalStyle.position && originalStyle.position !== 'static' ? originalStyle.position : 'relative',
       zIndex: 999,
       cursor: csutomOptions.enableGrab ? style.cursor.grab : style.cursor.zoomOut,
       transition: transformCssProp + '\n        ' + csutomOptions.transitionDuration + 's\n        ' + csutomOptions.transitionTimingFunction,
-      transform: 'translate(' + translate.x + 'px, ' + translate.y + 'px) scale(' + scale + ')'
+      transform: 'translate(' + translate.x + 'px, ' + translate.y + 'px) ' + (isIE ? '' : 'translateZ(0)') + ' scale(' + scale + ')'
     };
 
     // trigger transition

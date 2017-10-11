@@ -2,12 +2,13 @@ import { half, getWindowCenter } from './_helpers'
 
 const sniffTransition = (el) => {
   let ret     = {}
-  const trans = ['webkitTransition', 'mozTransition', 'msTransition', 'transition']
-  const tform = ['webkitTransform', 'mozTransform', 'msTransform', 'transform']
+  const trans = ['webkitTransition', 'mozTransition', 'oTransition', 'msTransition', 'transition']
+  const tform = ['webkitTransform', 'mozTransform', 'oTransform', 'msTransform', 'transform']
   const end   = {
-    WebkitTransition : 'webkitTransitionEnd',
-    MozTransition    : 'transitionend',
-    OTransition      : 'oTransitionEnd otransitionend',
+    webkitTransition : 'webkitTransitionEnd',
+    mozTransition    : 'transitionend',
+    oTransition      : 'oTransitionEnd otransitionend',
+    msTransition     : 'msTransitionEnd',
     transition       : 'transitionend'
   }
 

@@ -1,6 +1,7 @@
+import './_polyfill'
 import style from './_style'
 import options from './_options'
-import { loadImage, scrollTop, getWindowCenter, toggleListeners, on } from './_helpers'
+import { loadImage, scrollTop, getWindowCenter, toggleListeners, on, detectIE } from './_helpers'
 import { sniffTransition, checkTrans, calculateTranslate, calculateScale } from './_trans'
 import { processTouches } from './_touch'
 
@@ -14,6 +15,8 @@ const EVENT_TYPES_GRAB = [
 const body = document.body
 const overlay = document.createElement('div')
 let target, parent
+
+const isIE = detectIE()
 
 // state
 let shown = false       // target is open
@@ -220,13 +223,13 @@ const api = {
 
     const originalStyle = window.getComputedStyle(target)
     style.target.open = {
-      position: originalStyle.position || 'relative',
+      position: originalStyle.position && originalStyle.position !== 'static' ? originalStyle.position : 'relative',
       zIndex: 999,
       cursor: csutomOptions.enableGrab ? style.cursor.grab : style.cursor.zoomOut,
       transition: `${transformCssProp}
         ${csutomOptions.transitionDuration}s
         ${csutomOptions.transitionTimingFunction}`,
-      transform: `translate(${translate.x}px, ${translate.y}px) scale(${scale})`
+      transform: `translate(${translate.x}px, ${translate.y}px) ${isIE ? '' : 'translateZ(0)'} scale(${scale})`
     }
 
     // trigger transition
