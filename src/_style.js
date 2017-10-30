@@ -8,7 +8,7 @@ export default {
   },
   overlay: {
     init: {
-      zIndex: 998,
+      zIndex: options.zIndex,
       backgroundColor: options.bgColor,
       position: 'fixed',
       top: 0,
@@ -18,14 +18,14 @@ export default {
       opacity: 0,
       transition: `opacity
         ${options.transitionDuration}s
-        ${options.transitionTimingFunction}`
-    }
+        ${options.transitionTimingFunction}`,
+    },
   },
   cursor: {
     default: 'auto',
     zoomIn: `${webkitPrefix}zoom-in`,
     zoomOut: `${webkitPrefix}zoom-out`,
     grab: `${webkitPrefix}grab`,
-    move: 'move'
-  }
+    move: 'move',
+  },
 }

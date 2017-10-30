@@ -1,156 +1,145 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
 
-  <!-- Basic Page Needs
+  <head>
+
+    <!-- Basic Page Needs
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <meta charset="utf-8">
-  <title>Zooming</title>
-  <meta name="description" content="Image zoom that makes sense.">
-  <meta name="author" content="Desmond Ding">
+    <meta charset="utf-8">
+    <title>Zooming</title>
+    <meta name="description" content="Image zoom that makes sense.">
+    <meta name="author" content="Desmond Ding">
 
-  <!-- Mobile Specific Metas
+    <!-- Mobile Specific Metas
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- FONT
+    <!-- FONT
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <link href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
 
-  <!-- CSS
+    <!-- CSS
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
-  <link rel="stylesheet" href="demo/css/custom.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
+    <link rel="stylesheet" href="demo/css/custom.css">
 
-</head>
-<body>
+  </head>
 
-  <!-- Primary Page Layout
+  <body>
+
+    <!-- Primary Page Layout
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <div class="container">
+    <div class="container">
 
-    <section class="header">
-      <h2>Zooming</h2>
+      <section class="header">
+        <h2>Zooming</h2>
 
-      <div class="value-img">
-        <img src="demo/img/journey_start_thumbnail.jpg"
-        data-action="zoom"
-        data-original="demo/img/journey_start.jpg"
-        data-bg-opacity="0.6"
-        data-width="900"
-        data-height="600"
-        alt="journey_start_thumbnail" />
-      </div>
-    </section>
+        <div class="value-img">
+          <img src="demo/img/journey_start_thumbnail.jpg" data-action="zoom" data-original="demo/img/journey_start.jpg" data-bg-opacity="0.6"
+            data-width="900" data-height="600" alt="journey_start_thumbnail" />
+        </div>
+      </section>
 
-    <section class="content">
-      <h4>Image zoom that makes sense.</h4>
+      <section class="content">
+        <h4>Image zoom that makes sense.</h4>
 
-      <ul>
-        <li>Pure JavaScript &amp; built with mobile in mind.</li>
-        <li>Smooth animations with intuitive gestures.</li>
-        <li>Zoom into a hi-res image if supplied.</li>
-        <li>Easy to integrate &amp; customizable.</li>
-      </ul>
+        <ul>
+          <li>Pure JavaScript &amp; built with mobile in mind.</li>
+          <li>Smooth animations with intuitive gestures.</li>
+          <li>Zoom into a hi-res image if supplied.</li>
+          <li>Easy to integrate &amp; customizable.</li>
+        </ul>
 
-      <div class="value-img">
-        <img src="demo/img/journey_thumbnail.jpg"
-        data-action="zoom"
-        data-original="demo/img/journey.jpg"
-        data-bg-opacity="0"
-        alt="journey_thumbnail" />
-      </div>
+        <div class="value-img">
+          <img src="demo/img/journey_thumbnail.jpg" data-action="zoom" data-original="demo/img/journey.jpg" data-bg-opacity="0" alt="journey_thumbnail"
+          />
+        </div>
 
-      <p>
-        <em>Faced with rolling sand dunes, age-old ruins, caves and howling winds,
-          your passage will not be an easy one. The goal is to get to the mountaintop,
-          but the experience is discovering who you are, what this place is,
-          and what is your purpose.</em>
-      </p>
+        <p>
+          <em>Faced with rolling sand dunes, age-old ruins, caves and howling winds, your passage will not be an easy one. The
+            goal is to get to the mountaintop, but the experience is discovering who you are, what this place is, and what
+            is your purpose.</em>
+        </p>
 
-      <h4>Huge image</h4>
+        <h4>Huge image</h4>
 
-      <div class="value-img">
-        <img src="https://cdn-images-1.medium.com/max/1600/1*gUjLaVefTujdUfRgcPIfsg.jpeg"
-        data-action="zoom"
-        data-bg-opacity="0.6"
-        data-width="800"
-        data-height="5200"
-        style="width: 700px; height: 4550"
-        alt="journey_start_thumbnail" />
-      </div>
+        <div class="value-img">
+          <img src="https://cdn-images-1.medium.com/max/1600/1*gUjLaVefTujdUfRgcPIfsg.jpeg" data-action="zoom" data-bg-opacity="0.6"
+            data-width="800" data-height="5200" style="width: 700px; height: 4550" alt="journey_start_thumbnail" />
+        </div>
 
-      <div class="row">
-        <a class="button" id="btn-fast" onclick="fast()">faster</a>
-        <a class="button" id="btn-slow" onclick="slow()">slow down</a>
-        <a class="button" id="btn-dark" onclick="dark()">make it dark</a>
-        <a class="button" id="btn-no-grab" onclick="noGrab()">no grab</a>
-      </div>
+        <div class="row">
+          <a class="button" id="btn-fast" onclick="fast()">faster</a>
+          <a class="button" id="btn-slow" onclick="slow()">slow down</a>
+          <a class="button" id="btn-dark" onclick="dark()">make it dark</a>
+          <a class="button" id="btn-no-grab" onclick="noGrab()">no grab</a>
+        </div>
 
-      <hr>
+        <hr>
 
-      <a class="button button-primary" href="https://github.com/kingdido999/zooming">start journey</a>
-    </section>
+        <a class="button button-primary" href="https://github.com/kingdido999/zooming">start journey</a>
+      </section>
 
-    <br>
-  </div>
+      <br>
+    </div>
 
-  <!-- Scripts
+    <!-- Scripts
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <script>
-    var docLog = function() {
-    if (!docLog._div) { docLog.createDiv(); }
-    var logEntry = document.createElement('span');
-    for (var i=0; i < arguments.length; i++) {
-    logEntry.innerHTML += docLog.toJson(arguments[i]);
-    }
-    logEntry.innerHTML += '<br />';
-    docLog._div.appendChild(logEntry);
-    };
-    docLog.createDiv = function() {
-    docLog._div = document.body.appendChild(document.createElement('div'));
-    var props = {
-    position:'absolute',
-    top:'0px',
-    right:'0px',
-    background:'#333',
-    padding: '10px',
-    opacity: 0.7,
-    color: 'white',
-    width: '70%',
-    'max-width': '400px',
-    height: '300px',
-    overflow: 'auto',
-    fontFamily: 'courier new',
-    fontSize: '11px',
-    whiteSpace: 'nowrap',
-    zIndex: 99999999,
-    }
-    for (var key in props) { docLog._div.style[key] = props[key]; }
-    }
-    docLog.toJson = function(obj) {
-    if (typeof window.uneval == 'function') { return uneval(obj); }
-    if (typeof obj == 'object') {
-    if (!obj) { return 'null'; }
-    var list = [];
-    if (obj instanceof Array) {
-    for (var i=0;i < obj.length;i++) { list.push(this.toJson(obj[i])); }
-    return '[' + list.join(',') + ']';
-    } else {
-    for (var prop in obj) { list.push('"' + prop + '":' + this.toJson(obj[prop])); }
-    return '{' + list.join(',') + '}';
-    }
-    } else if (typeof obj == 'string') {
-    return '"' + obj.replace(/(["'])/g, '$1') + '"';
-    } else {
-    return new String(obj);
-    }
-    }
-  </script>
-  <script src="build/zooming.js"></script>
-  <script src="demo/js/custom.js"></script>
-<!-- End Document
+    <script>
+      var docLog = function () {
+        if (!docLog._div) { docLog.createDiv(); }
+        var logEntry = document.createElement('span');
+        for (var i = 0; i < arguments.length; i++) {
+          logEntry.innerHTML += docLog.toJson(arguments[i]);
+        }
+        logEntry.innerHTML += '<br />';
+        docLog._div.appendChild(logEntry);
+      };
+      docLog.createDiv = function () {
+        docLog._div = document.body.appendChild(document.createElement('div'));
+        var props = {
+          position: 'absolute',
+          top: '0px',
+          right: '0px',
+          background: '#333',
+          padding: '10px',
+          opacity: 0.7,
+          color: 'white',
+          width: '70%',
+          'max-width': '400px',
+          height: '300px',
+          overflow: 'auto',
+          fontFamily: 'courier new',
+          fontSize: '11px',
+          whiteSpace: 'nowrap',
+          zIndex: 99999999,
+        }
+        for (var key in props) { docLog._div.style[key] = props[key]; }
+      }
+      docLog.toJson = function (obj) {
+        if (typeof window.uneval == 'function') { return uneval(obj); }
+        if (typeof obj == 'object') {
+          if (!obj) { return 'null'; }
+          var list = [];
+          if (obj instanceof Array) {
+            for (var i = 0; i < obj.length; i++) { list.push(this.toJson(obj[i])); }
+            return '[' + list.join(',') + ']';
+          } else {
+            for (var prop in obj) { list.push('"' + prop + '":' + this.toJson(obj[prop])); }
+            return '{' + list.join(',') + '}';
+          }
+        } else if (typeof obj == 'string') {
+          return '"' + obj.replace(/(["'])/g, '$1') + '"';
+        } else {
+          return new String(obj);
+        }
+      }
+    </script>
+    <script src="build/zooming.js"></script>
+    <script src="demo/js/custom.js"></script>
+    <!-- End Document
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-</body>
+  </body>
+
 </html>

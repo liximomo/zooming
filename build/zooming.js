@@ -405,7 +405,8 @@ var detectIE = function detectIE() {
  *   onBeforeClose: null,
  *   onBeforeGrab: null,
  *   onBeforeMove: null,
- *   onBeforeRelease: null
+ *   onBeforeRelease: null,
+ *   zIndex: 999
  * }
  */
 var options = {
@@ -450,6 +451,12 @@ var options = {
    * @type {number}
    */
   bgOpacity: 1,
+
+  /**
+   * z-index.
+   * @type {number}
+   */
+  zIndex: 998,
 
   /**
    * The base scale factor for zooming. By default scale to fit the window.
@@ -526,7 +533,7 @@ var style = {
   },
   overlay: {
     init: {
-      zIndex: 998,
+      zIndex: options.zIndex,
       backgroundColor: options.bgColor,
       position: 'fixed',
       top: 0,
@@ -725,7 +732,6 @@ var setStyle$1 = function setStyle$1(el, styles, remember) {
 };
 
 var eventHandler = {
-
   click: function click(e) {
     e.preventDefault();
 
@@ -808,7 +814,7 @@ var eventHandler = {
 };
 
 var kabeCaseMap = {
-  'bgOpacity': 'bg-opacity'
+  bgOpacity: 'bg-opacity'
 };
 
 var kabeCase = function kabeCase(str) {
@@ -822,7 +828,6 @@ var kabeCase = function kabeCase(str) {
  * @type {Object}
  */
 var api = {
-
   /**
    * Make element(s) zoomable.
    * @param  {string|Element} el A css selector or an Element.
@@ -831,6 +836,7 @@ var api = {
   listen: function listen(el, delegated) {
     if (delegated) {
       on(el, 'click', delegated, eventHandler.click);
+      return _this;
     }
 
     if (typeof el === 'string') {
@@ -913,7 +919,7 @@ var api = {
     var originalStyle = window.getComputedStyle(target);
     style.target.open = {
       position: originalStyle.position && originalStyle.position !== 'static' ? originalStyle.position : 'relative',
-      zIndex: 999,
+      zIndex: options.zIndex + 1,
       cursor: csutomOptions.enableGrab ? style.cursor.grab : style.cursor.zoomOut,
       transition: transformCssProp + '\n        ' + csutomOptions.transitionDuration + 's\n        ' + csutomOptions.transitionTimingFunction,
       transform: 'translate(' + translate.x + 'px, ' + translate.y + 'px) ' + (isIE ? '' : 'translateZ(0)') + ' scale(' + scale + ')'
@@ -1155,6 +1161,7 @@ var api = {
     }
 
     setStyle$1(overlay, {
+      zIndex: options.zIndex,
       backgroundColor: options.bgColor,
       transition: 'opacity\n        ' + options.transitionDuration + 's\n        ' + options.transitionTimingFunction
     });

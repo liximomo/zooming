@@ -7,8 +7,12 @@ import { processTouches } from './_touch'
 
 const PRESS_DELAY = 200
 const EVENT_TYPES_GRAB = [
-  'mousedown', 'mousemove', 'mouseup',
-  'touchstart', 'touchmove', 'touchend'
+  'mousedown',
+  'mousemove',
+  'mouseup',
+  'touchstart',
+  'touchmove',
+  'touchend',
 ]
 
 // elements
@@ -19,9 +23,9 @@ let target, parent
 const isIE = detectIE()
 
 // state
-let shown = false       // target is open
-let lock  = false       // target is in transform
-let released = true     // mouse/finger is not pressing down
+let shown = false // target is open
+let lock = false // target is in transform
+let released = true // mouse/finger is not pressing down
 let lastScrollPosition = null
 let translate, scale, srcThumbnail, pressTimer
 
@@ -35,8 +39,7 @@ const setStyle = (el, styles, remember) => {
 }
 
 const eventHandler = {
-
-  click: function (e) {
+  click: function(e) {
     e.preventDefault()
 
     if (shown) {
@@ -47,7 +50,7 @@ const eventHandler = {
     }
   },
 
-  scroll: function () {
+  scroll: function() {
     const st = scrollTop()
 
     if (lastScrollPosition === null) {
@@ -62,7 +65,7 @@ const eventHandler = {
     }
   },
 
-  keydown: function (e) {
+  keydown: function(e) {
     const code = e.key || e.code
     if (code === 'Escape' || e.keyCode === 27) {
       if (released) api.close()
@@ -70,21 +73,21 @@ const eventHandler = {
     }
   },
 
-  mousedown: function (e) {
+  mousedown: function(e) {
     if (e.button !== 0) return
     e.preventDefault()
 
-    pressTimer = setTimeout(function () {
+    pressTimer = setTimeout(function() {
       api.grab(e.clientX, e.clientY)
     }, PRESS_DELAY)
   },
 
-  mousemove: function (e) {
+  mousemove: function(e) {
     if (released) return
     api.move(e.clientX, e.clientY)
   },
 
-  mouseup: function (e) {
+  mouseup: function(e) {
     if (e.button !== 0) return
     clearTimeout(pressTimer)
 
@@ -92,7 +95,7 @@ const eventHandler = {
     else api.release()
   },
 
-  touchstart: function (e) {
+  touchstart: function(e) {
     e.preventDefault()
 
     pressTimer = setTimeout(() => {
@@ -102,7 +105,7 @@ const eventHandler = {
     }, PRESS_DELAY)
   },
 
-  touchmove: function (e) {
+  touchmove: function(e) {
     if (released) return
 
     processTouches(e.touches, (x, y, scaleExtra) => {
@@ -110,17 +113,17 @@ const eventHandler = {
     })
   },
 
-  touchend: function (e) {
+  touchend: function(e) {
     if (e.targetTouches.length > 0) return
     clearTimeout(pressTimer)
 
     if (released) api.close()
     else api.release()
-  }
+  },
 }
 
 const kabeCaseMap = {
-  'bgOpacity': 'bg-opacity',
+  bgOpacity: 'bg-opacity',
 }
 
 const kabeCase = str => {
@@ -134,7 +137,6 @@ const kabeCase = str => {
  * @type {Object}
  */
 const api = {
-
   /**
    * Make element(s) zoomable.
    * @param  {string|Element} el A css selector or an Element.
@@ -143,10 +145,12 @@ const api = {
   listen: (el, delegated) => {
     if (delegated) {
       on(el, 'click', delegated, eventHandler.click)
+      return this
     }
 
     if (typeof el === 'string') {
-      let els = document.querySelectorAll(el), i = els.length
+      let els = document.querySelectorAll(el),
+        i = els.length
 
       while (i--) {
         api.listen(els[i])
@@ -179,14 +183,12 @@ const api = {
   open: (el, cb = options.onOpen) => {
     if (shown || lock) return
 
-    target = typeof el === 'string'
-      ? document.querySelector(el)
-      : el
+    target = typeof el === 'string' ? document.querySelector(el) : el
 
     if (target.tagName !== 'IMG') return
 
     const csutomOptions = Object.assign(options)
-    
+
     const overrideOption = ['bgOpacity' /*, scaleBase, duration */]
     overrideOption.forEach(optKey => {
       let value = null
@@ -197,9 +199,9 @@ const api = {
 
     const windowCenter = getWindowCenter()
     // custom scale window
-    if( target.hasAttribute('data-width') && target.hasAttribute('data-height')) {
+    if (target.hasAttribute('data-width') && target.hasAttribute('data-height')) {
       windowCenter.x = Math.min(windowCenter.x, target.getAttribute('data-width') / 2)
-      windowCenter.y =  Math.min(windowCenter.y, target.getAttribute('data-height') / 2)
+      windowCenter.y = Math.min(windowCenter.y, target.getAttribute('data-height') / 2)
     }
 
     // onBeforeOpen event
@@ -223,13 +225,18 @@ const api = {
 
     const originalStyle = window.getComputedStyle(target)
     style.target.open = {
-      position: originalStyle.position && originalStyle.position !== 'static' ? originalStyle.position : 'relative',
-      zIndex: 999,
+      position:
+        originalStyle.position && originalStyle.position !== 'static'
+          ? originalStyle.position
+          : 'relative',
+      zIndex: options.zIndex + 1,
       cursor: csutomOptions.enableGrab ? style.cursor.grab : style.cursor.zoomOut,
       transition: `${transformCssProp}
         ${csutomOptions.transitionDuration}s
         ${csutomOptions.transitionTimingFunction}`,
-      transform: `translate(${translate.x}px, ${translate.y}px) ${isIE ? '' : 'translateZ(0)'} scale(${scale})`
+      transform: `translate(${translate.x}px, ${translate.y}px) ${isIE
+        ? ''
+        : 'translateZ(0)'} scale(${scale})`,
     }
 
     // trigger transition
@@ -237,7 +244,7 @@ const api = {
 
     // insert overlay
     parent.appendChild(overlay)
-    setTimeout(() => overlay.style.opacity = csutomOptions.bgOpacity, 30)
+    setTimeout(() => (overlay.style.opacity = csutomOptions.bgOpacity), 30)
 
     document.addEventListener('scroll', eventHandler.scroll)
     document.addEventListener('keydown', eventHandler.keydown)
@@ -365,10 +372,10 @@ const api = {
     setStyle(target, {
       cursor: style.cursor.move,
       transform: `translate(${translate.x + dx}px, ${translate.y + dy}px)
-        scale(${scale + scaleExtra})`
+        scale(${scale + scaleExtra})`,
     })
 
-    target.addEventListener(transEndEvent, function onEnd () {
+    target.addEventListener(transEndEvent, function onEnd() {
       target.removeEventListener(transEndEvent, onEnd)
       if (cb) cb(target)
     })
@@ -398,12 +405,12 @@ const api = {
     setStyle(target, {
       transition: transformCssProp,
       transform: `translate(${translate.x + dx}px, ${translate.y + dy}px)
-        scale(${scale + scaleExtra})`
+        scale(${scale + scaleExtra})`,
     })
 
     body.style.cursor = style.cursor.move
 
-    target.addEventListener(transEndEvent, function onEnd () {
+    target.addEventListener(transEndEvent, function onEnd() {
       target.removeEventListener(transEndEvent, onEnd)
       if (cb) cb(target)
     })
@@ -427,7 +434,7 @@ const api = {
     setStyle(target, style.target.open)
     body.style.cursor = style.cursor.default
 
-    target.addEventListener(transEndEvent, function onEnd () {
+    target.addEventListener(transEndEvent, function onEnd() {
       target.removeEventListener(transEndEvent, onEnd)
 
       lock = false
@@ -444,7 +451,7 @@ const api = {
    * @param  {Object} opts An Object that contains options.
    * @return {api}
    */
-  config: (opts) => {
+  config: opts => {
     if (!opts) return options
 
     for (let key in opts) {
@@ -452,10 +459,11 @@ const api = {
     }
 
     setStyle(overlay, {
+      zIndex: options.zIndex,
       backgroundColor: options.bgColor,
       transition: `opacity
         ${options.transitionDuration}s
-        ${options.transitionTimingFunction}`
+        ${options.transitionTimingFunction}`,
     })
 
     return this

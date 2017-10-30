@@ -22,7 +22,8 @@
  *   onBeforeClose: null,
  *   onBeforeGrab: null,
  *   onBeforeMove: null,
- *   onBeforeRelease: null
+ *   onBeforeRelease: null,
+ *   zIndex: 999
  * }
  */
 export default {
@@ -67,6 +68,12 @@ export default {
    * @type {number}
    */
   bgOpacity: 1,
+
+  /**
+   * z-index.
+   * @type {number}
+   */
+  zIndex: 998,
 
   /**
    * The base scale factor for zooming. By default scale to fit the window.
@@ -133,5 +140,5 @@ export default {
    * A callback function that will be called before release.
    * @type {Function}
    */
-  onBeforeRelease: null
+  onBeforeRelease: null,
 }
