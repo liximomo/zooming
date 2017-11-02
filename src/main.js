@@ -198,10 +198,14 @@ const api = {
     })
 
     const windowCenter = getWindowCenter()
+
     // custom scale window
     if (target.hasAttribute('data-width') && target.hasAttribute('data-height')) {
       windowCenter.x = Math.min(windowCenter.x, target.getAttribute('data-width') / 2)
       windowCenter.y = Math.min(windowCenter.y, target.getAttribute('data-height') / 2)
+    } else {
+      windowCenter.x = windowCenter.x * options.scale
+      windowCenter.y = windowCenter.y * options.scale
     }
 
     // onBeforeOpen event
@@ -218,7 +222,7 @@ const api = {
 
     const rect = target.getBoundingClientRect()
     translate = calculateTranslate(rect)
-    scale = calculateScale(rect, csutomOptions.scaleBase, windowCenter)
+    scale = calculateScale(rect, windowCenter)
 
     // force layout update
     target.offsetWidth

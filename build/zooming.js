@@ -221,7 +221,6 @@ if ("document" in self) {
 	}
 }
 
-/* eslint-disable no-unused-vars */
 var getOwnPropertySymbols = Object.getOwnPropertySymbols;
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 var propIsEnumerable = Object.prototype.propertyIsEnumerable;
@@ -395,7 +394,7 @@ var detectIE = function detectIE() {
  *   transitionTimingFunction: 'cubic-bezier(0.4, 0, 0, 1)',
  *   bgColor: 'rgb(255, 255, 255)',
  *   bgOpacity: 1,
- *   scaleBase: 1.0,
+ *   scale: 1.0,
  *   scaleExtra: 0.5,
  *   scrollThreshold: 40,
  *   onOpen: null,
@@ -459,10 +458,10 @@ var options = {
   zIndex: 998,
 
   /**
-   * The base scale factor for zooming. By default scale to fit the window.
+   * The scale factor for zooming. By default scale to fit the window.
    * @type {number}
    */
-  scaleBase: 1.0,
+  scale: 1.0,
 
   /**
    * The extra scale factor when grabbing the image.
@@ -624,7 +623,7 @@ var calculateTranslate = function calculateTranslate(rect) {
   };
 };
 
-var calculateScale = function calculateScale(rect, scaleBase, windowCenter) {
+var calculateScale = function calculateScale(rect, windowCenter) {
   var targetHalfWidth = half(rect.width);
   var targetHalfHeight = half(rect.height);
 
@@ -639,7 +638,7 @@ var calculateScale = function calculateScale(rect, scaleBase, windowCenter) {
 
   // The additional scale is based on the smaller value of
   // scaling horizontally and scaling vertically
-  return scaleBase + Math.min(scaleHorizontally, scaleVertically);
+  return 1 + Math.min(scaleHorizontally, scaleVertically);
 };
 
 var TOUCH_SCALE_FACTOR = 2;
@@ -891,10 +890,14 @@ var api = {
     });
 
     var windowCenter = getWindowCenter();
+
     // custom scale window
     if (target.hasAttribute('data-width') && target.hasAttribute('data-height')) {
       windowCenter.x = Math.min(windowCenter.x, target.getAttribute('data-width') / 2);
       windowCenter.y = Math.min(windowCenter.y, target.getAttribute('data-height') / 2);
+    } else {
+      windowCenter.x = windowCenter.x * options.scale;
+      windowCenter.y = windowCenter.y * options.scale;
     }
 
     // onBeforeOpen event
@@ -911,7 +914,7 @@ var api = {
 
     var rect = target.getBoundingClientRect();
     translate = calculateTranslate(rect);
-    scale = calculateScale(rect, csutomOptions.scaleBase, windowCenter);
+    scale = calculateScale(rect, windowCenter);
 
     // force layout update
     target.offsetWidth;

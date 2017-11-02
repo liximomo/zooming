@@ -12,7 +12,7 @@
  *   transitionTimingFunction: 'cubic-bezier(0.4, 0, 0, 1)',
  *   bgColor: 'rgb(255, 255, 255)',
  *   bgOpacity: 1,
- *   scaleBase: 1.0,
+ *   scale: 1.0,
  *   scaleExtra: 0.5,
  *   scrollThreshold: 40,
  *   onOpen: null,
@@ -76,10 +76,10 @@ export default {
   zIndex: 998,
 
   /**
-   * The base scale factor for zooming. By default scale to fit the window.
+   * The scale factor for zooming. By default scale to fit the window.
    * @type {number}
    */
-  scaleBase: 1.0,
+  scale: 1.0,
 
   /**
    * The extra scale factor when grabbing the image.

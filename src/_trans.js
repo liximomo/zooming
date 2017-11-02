@@ -71,7 +71,7 @@ const calculateTranslate = (rect) => {
   }
 }
 
-const calculateScale = (rect, scaleBase, windowCenter) => {
+const calculateScale = (rect, windowCenter) => {
   const targetHalfWidth = half(rect.width)
   const targetHalfHeight = half(rect.height)
 
@@ -86,7 +86,7 @@ const calculateScale = (rect, scaleBase, windowCenter) => {
 
   // The additional scale is based on the smaller value of
   // scaling horizontally and scaling vertically
-  return scaleBase + Math.min(scaleHorizontally, scaleVertically)
+  return 1 + Math.min(scaleHorizontally, scaleVertically)
 }
 
 export {
